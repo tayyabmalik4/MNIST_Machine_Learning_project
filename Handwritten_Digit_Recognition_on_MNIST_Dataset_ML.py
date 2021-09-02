@@ -20,6 +20,11 @@ import matplotlib.pyplot as plt
 from sklearn.datasets import fetch_openml
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import cross_val_predict
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import precision_score, recall_score
+from sklearn.metrics import f1_score
+from sklearn.metrics import precision_recall_curve
 
 # ----importing dataset of mnist
 mnist= fetch_openml('mnist_784')
@@ -78,6 +83,66 @@ model.predict([x0[3689]])
 # ********************Cross Validation
 a=cross_val_score(model,x_train,y_train_2 ,cv=3,scoring='accuracy')
 a.mean()
+
+
+
+
+
+
+
+
+
+# *********************Predicted Values using sklearn
+y_train_pred = cross_val_predict(model, x_train,y_train_2, cv=3)
+print(y_train_pred)
+
+# ********************Calculating Confusion Matrix
+confusion = confusion_matrix(y_train_2, y_train_pred)
+print(confusion)
+
+# -----Now we just check it that the perfect prediction
+confusion_matrix(y_train_2, y_train_2)
+
+
+# ----Precsion and Recall
+precision=precision_score(y_train_2, y_train_pred)
+print(precision)
+recall= recall_score(y_train_2, y_train_pred)
+print(recall)
+# ----F1 Score
+f1=f1_score(y_train_2,y_train_pred)
+print(f1)
+
+
+# *******************Precision Recall Curve
+# ----we need values noot bool so we use other method to check the threshholds and precision recall curve
+y_scores=cross_val_predict(model,x_train,y_train_2,cv=3,method="decision_function")
+# precision,recalls, thresholds=precision_recall_curve(y_train_2,y_train_pred)
+precision,recalls, thresholds=precision_recall_curve(y_train_2,y_scores)
+# -----checking precision
+precision
+# -----checking recall
+recalls
+# -----checking thresholds
+thresholds
+
+
+# *******************Plotting the precision Recall Curve
+plt.plot(thresholds,precision[:-1], "b--", label="precision")
+plt.plot(thresholds, recalls[:-1], "g-",label="Recall")
+plt.xlabel("Thresholds")
+plt.legend(loc="upper left")
+plt.ylim([0,1])
+
+
+
+
+
+
+
+
+
+
 
 
 
